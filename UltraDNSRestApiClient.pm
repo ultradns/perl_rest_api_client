@@ -113,10 +113,14 @@ sub make_request {
 
     my $api_base_url = $me->{'api_base_url'};
     my $url   = $api_base_url . $path;
-
     my $uri = URI->new($url);
-    my $req = new HTTP::Request $method => $uri->as_string;
 
+    #prepare the request
+    my $req = new HTTP::Request $method => $uri->as_string;
+    $req->header('Content-Type' => 'application/json');
+    $req->content($params);
+
+    #prepare header for auth
     $ua->default_header('Authorization' => 'Bearer ' . $me->{'access_token'});
 
     my $response = $ua->request($req);
@@ -141,6 +145,14 @@ sub get_account_details {
     my $me = shift;
     my $content = $me->make_request("/accounts", "GET" );
     return $content;
+}
+
+sub create_primary_zone {
+    my $me = shift;
+    my $zone = shift;
+
+    print "\n".$zone;
+    return $me->make_request("/zones", "POST", $zone);
 }
 
 # a sub routine to process error conditions.
