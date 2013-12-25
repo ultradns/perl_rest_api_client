@@ -78,29 +78,6 @@ sub refresh {
     }
 }
 
-# subroutine to get version of REST Api.
-# In case of success, return value is version string
-# In case of error, return value is an error string containing details about the error
-sub get_version {
-    my $me = shift;
-    my $api_base_url = $me->{'api_base_url'};
-    my $version_url   = $api_base_url . "/version";
-
-    my $access_token = shift;
-    my $version_uri = URI->new($version_url);
-    my $req = new HTTP::Request GET => $version_uri->as_string;
-
-    my $response = $ua->request($req);
-
-    if ($response->is_success) {
-        my $content = from_json($response->content);
-        return $content->{'version'};
-    } else {
-        return "Error getting Version:" . $response->status_line;
-    }
-
-}
-
 # common method to make a request
 # returns content of response in case of success
 # In case of error, retries after using refresh token to get new set of tokens
@@ -133,28 +110,6 @@ sub make_request {
     }
 }
 
-# Gets status of API server.
-sub get_status {
-    my $me = shift;
-    my $content = from_json($me->make_request("/status", "GET" ));
-    return $content->{'message'};
-}
-
-# Gets account details of the authorized user. Return value in case of success is a JSON string with the details
-sub get_account_details {
-    my $me = shift;
-    my $content = $me->make_request("/accounts", "GET" );
-    return $content;
-}
-
-sub create_primary_zone {
-    my $me = shift;
-    my $zone = shift;
-
-    print "\n".$zone;
-    return $me->make_request("/zones", "POST", $zone);
-}
-
 # a sub routine to process error conditions.
 # if there is a 401 then a retry is attempted after a refresh on the tokens
 sub process_error {
@@ -175,7 +130,82 @@ sub process_error {
     }
 }
 
+# subroutine to get version of REST Api.
+# In case of success, return value is version string
+# In case of error, return value is an error string containing details about the error
+sub get_version {
+    my $me = shift;
+    my $api_base_url = $me->{'api_base_url'};
+    my $version_url   = $api_base_url . "/version";
 
+    my $access_token = shift;
+    my $version_uri = URI->new($version_url);
+    my $req = new HTTP::Request GET => $version_uri->as_string;
+
+    my $response = $ua->request($req);
+
+    if ($response->is_success) {
+        my $content = from_json($response->content);
+        return $content->{'version'};
+    } else {
+        return "Error getting Version:" . $response->status_line;
+    }
+
+}
+
+# Gets status of API server.
+sub get_status {
+    my $me = shift;
+    my $content = from_json($me->make_request("/status", "GET" ));
+    return $content->{'message'};
+}
+
+# Gets account details of the authorized user. Return value in case of success is a JSON string with the details
+sub get_account_details {
+    my $me = shift;
+    return $me->make_request("/accounts", "GET" );
+}
+
+# creates a primary zone
+# The zone to be create should be passed as a parameter as a JSON string
+# Refer documentation for JSON format expected
+sub create_primary_zone {
+    my $me = shift;
+    my $zone_json = shift;
+    return $me->make_request("/zones", "POST", $zone_json);
+}
+
+# Gets zone meta data for the zone name
+sub get_zone_metadata {
+    my $me = shift;
+    my $zone_name = shift;
+    return $me->make_request("/zones/" . $zone_name, "GET" );
+}
+
+sub get_zones_of_account {
+    my $me = shift;
+    my $account_name = shift;
+    my $offset = shift;
+    my $limit = shift;
+    my $sort = shift;
+    my $reverse = shift;
+
+    my %query_params = (
+        "offset" => $offset,
+        "limit" => $limit,
+        "sort" => $sort,
+        "reverse" => $reverse,
+    );
+    return $me->make_request("/accounts/" . $account_name . "/zones", "GET", %query_params);
+}
+
+sub delete_zone {
+    my $me = shift;
+    my $zone = shift;
+    return $me->make_request("/zones/" . $zone, "DELETE", %query_params);
+}
+
+# need to have this or else you will get compile errors
 1;
   
 

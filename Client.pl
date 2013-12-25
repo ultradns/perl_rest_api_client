@@ -12,13 +12,30 @@ $client->authorize('teamrest1', 'Teamrest1');
 print 'Version:'.$client->get_version();
 print "\n";
 
+print "\n";
 print 'Status:'.$client->get_status();
 print "\n";
 
+print "\n";
 print 'Account Details:'.$client->get_account_details();
 print "\n";
 
-createTestPrimaryZone("example102.com.","teamrest" );
+print "\n";
+createTestPrimaryZone("example104.com.","teamrest" );
+print "\n";
+
+print "\n";
+print 'Zone Meta Data:'.$client->get_zone_metadata("example104.com.");
+print "\n";
+
+print "\n";
+print 'Zones of Account:' . $client->get_zones_of_account("teamrest");
+print "\n";
+
+print "\n";
+print 'Deleting Zone:' . $client->delete_zone("example104.com.");
+print "\n";
+
 
 # Zone Creation
 sub createTestPrimaryZone()
