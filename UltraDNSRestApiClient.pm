@@ -95,6 +95,7 @@ sub make_request {
     #prepare the request
     my $req = new HTTP::Request $method => $uri->as_string;
     $req->header('Content-Type' => 'application/json');
+
     $req->content($params);
 
     #prepare header for auth
@@ -126,7 +127,7 @@ sub process_error {
         $me->refresh();
         return $me->make_request($path, $method, $params, 1);
     } else {
-        return "Error on:" . $method . ":" . $path . ":" . $response->status_line;
+        return "ERROR on:" . $method . ":" . $path . ":" . $response->status_line . ":" . $response->content ;
     }
 }
 
@@ -204,6 +205,78 @@ sub delete_zone {
     my $zone = shift;
     return $me->make_request("/zones/" . $zone, "DELETE", %query_params);
 }
+
+
+sub get_rrsets {
+    my $me = shift;
+    my $zone_name = shift;
+    my $offset = shift;
+    my $limit = shift;
+    my $sort = shift;
+    my $reverse = shift;
+
+    my %query_params = (
+        "offset" => $offset,
+        "limit" => $limit,
+        "sort" => $sort,
+        "reverse" => $reverse,
+    );
+    return $me->make_request("/zones/" . $zone_name . "/rrsets", "GET", %query_params);
+}
+
+sub get_rrsets_by_type {
+    my $me = shift;
+    my $zone_name = shift;
+    my $type = shift;
+    my $offset = shift;
+    my $limit = shift;
+    my $sort = shift;
+    my $reverse = shift;
+
+    my %query_params = (
+        "offset" => $offset,
+        "limit" => $limit,
+        "sort" => $sort,
+        "reverse" => $reverse,
+    );
+    return $me->make_request("/zones/" . $zone_name . "/rrsets/" . $type, "GET", %query_params);
+}
+
+sub create_rrset {
+    my $me = shift;
+    my $rrset_json = shift;
+
+    my $rrset = from_json($rrset_json);
+    my $zone_name = $rrset->{'zoneName'};
+    my $owner_name = $rrset->{'ownerName'};
+    my $record_type = $rrset->{'rrtype'};
+
+    return $me->make_request("/zones/" . $zone_name . "/rrsets/" . $record_type . "/" . $owner_name, "POST", $rrset_json);
+}
+
+sub update_rrset {
+    my $me = shift;
+    my $rrset_json = shift;
+
+    my $rrset = from_json($rrset_json);
+    my $zone_name = $rrset->{'zoneName'};
+    my $owner_name = $rrset->{'ownerName'};
+    my $record_type = $rrset->{'rrtype'};
+    my $title = $rrset->{'title'};
+
+    my $rrset_json = shift;
+    return $me->make_request("/zones/" . $zone_name . "/rrsets/" . $record_type . "/" . $owner_name . "/" . $title, "PUT", $rrset_json);
+}
+
+sub delete_rrset {
+    my $me = shift;
+    my $zone_name = shift;
+    my $record_type = shift;
+    my $owner_name = shift;
+
+    return $me->make_request("/zones/" . $zone_name . "/rrsets/" . $record_type . "/" . $owner_name, "DELETE");
+}
+
 
 # need to have this or else you will get compile errors
 1;
