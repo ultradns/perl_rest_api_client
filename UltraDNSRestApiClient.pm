@@ -18,6 +18,17 @@ sub set_api_base_url {
     $me->{'api_base_url'} = $api_base_url;
 }
 
+sub set_refresh_token {
+    my $me = shift;
+    my $refresh_token = shift;
+    $me->{'refresh_token'} = $refresh_token;
+}
+
+sub get_refresh_token {
+    my $me = shift;
+    return $me->{'refresh_token'};
+}
+
 # authorize using username and password
 sub authorize {
     my $me = shift;

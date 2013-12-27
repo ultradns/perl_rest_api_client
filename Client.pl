@@ -4,14 +4,42 @@ package Client;
 use UltraDNSRestApiClient;
 use JSON;  
 use CGI;
+use Getopt::Long;
+
+my $api_url;
+my $refresh_token;
+my $username;
+my $password;
+GetOptions ('apiurl=s' => \$api_url,'refreshtoken=s' => \$refresh_token,
+    'username=s' => \$username, 'password=s' => \$password);
+if(not defined $api_url) {
+    print "apiurl is required";
+    exit;
+}
+
 
 my $client = new UltraDNSRestApiClient;
-$client->set_api_base_url('http://localhost:8080/v1');
+
+$client->set_api_base_url($api_url);
 
 print 'Version:'.$client->get_version();
 print "\n";
 
-$client->authorize('teamrest1', 'Teamrest1');
+if(not defined $refresh_token) {
+    if((not defined $username) || (not defined $password)) {
+        print 'please provide username and password OR refresh token';
+        exit;
+    } else {
+        $client->authorize($username, $password);
+        print 'Refresh Token :' . $client->get_refresh_token();
+    }
+} else {
+print "using refresh token\n";
+    $client->set_refresh_token($refresh_token);
+    $client->refresh();
+     print 'Refresh Token :' . $client->get_refresh_token();
+}
+
 print "\n";
 print 'Status:'.$client->get_status();
 print "\n";
@@ -33,11 +61,11 @@ print 'Zones of Account:' . $client->get_zones_of_account("teamrest");
 print "\n";
 
 print "\n";
-print 'Create RR Set:' . $client->create_rrset(createTestRRSet("example104.com.","teamrest1", "A", 300 ));
+print 'Create RR Set:' . $client->create_rrset(createTestRRSet("example104.com.","teamrest", "B", 300 ));
 print "\n";
 
 print "\n";
-print 'Update RR Set:' . $client->create_rrset(createTestRRSetForUpdate("example104.com.","teamrest1", "A", 300 ));
+print 'Update RR Set:' . $client->create_rrset(createTestRRSetForUpdate("example104.com.","teamrest", "A", 300 ));
 print "\n";
 
 
@@ -50,7 +78,7 @@ print 'RR Sets of Zone by Type:' . $client->get_rrsets_by_type("example104.com."
 print "\n";
 
 print "\n";
-print 'Delete RR Set:' . $client->delete_rrset("example104.com.","A", "teamrest1");
+print 'Delete RR Set:' . $client->delete_rrset("example104.com.","A", "teamrest");
 print "\n";
 
 print "\n";
