@@ -58,6 +58,9 @@ sub authorize {
         # set the access & refresh token as a member of this instance
         $me->{'access_token'} = $content->{'accessToken'};
         $me->{'refresh_token'} = $content->{'refreshToken'};
+        return $me->{'refresh_token'};
+    } else {
+        return "";
     }
 }
 
@@ -86,6 +89,9 @@ sub refresh {
         # set the access & refresh token as a member of this instance
         $me->{'refresh_token'} = $content->{'refreshToken'};
         $me->{'access_token'} = $content->{'accessToken'};
+        return $me->{'refresh_token'};
+    } else {
+        return "";
     }
 }
 

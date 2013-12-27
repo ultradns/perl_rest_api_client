@@ -10,6 +10,7 @@ my $api_url;
 my $refresh_token;
 my $username;
 my $password;
+
 GetOptions ('apiurl=s' => \$api_url,'refreshtoken=s' => \$refresh_token,
     'username=s' => \$username, 'password=s' => \$password);
 if(not defined $api_url) {
@@ -17,28 +18,13 @@ if(not defined $api_url) {
     exit;
 }
 
-
 my $client = new UltraDNSRestApiClient;
-
 $client->set_api_base_url($api_url);
 
 print 'Version:'.$client->get_version();
 print "\n";
 
-if(not defined $refresh_token) {
-    if((not defined $username) || (not defined $password)) {
-        print 'please provide username and password OR refresh token';
-        exit;
-    } else {
-        $client->authorize($username, $password);
-        print 'Refresh Token :' . $client->get_refresh_token();
-    }
-} else {
-print "using refresh token\n";
-    $client->set_refresh_token($refresh_token);
-    $client->refresh();
-     print 'Refresh Token :' . $client->get_refresh_token();
-}
+perform_auth();
 
 print "\n";
 print 'Status:'.$client->get_status();
@@ -86,6 +72,31 @@ print 'Deleting Zone:' . $client->delete_zone("example104.com.");
 print "\n";
 
 
+sub perform_auth {
+    if(not defined $refresh_token) {
+        if((not defined $username) || (not defined $password)) {
+            print 'please provide username and password OR refresh token';
+            exit;
+        } else {
+            my $response = $client->authorize($username, $password);
+            eval_auth_response($response);
+        }
+    } else {
+        $client->set_refresh_token($refresh_token);
+        my $response = $client->refresh();
+        eval_auth_response($response);
+    }
+}
+
+sub eval_auth_response {
+    my $response = shift;
+    if($response ne "") {
+        print 'Refresh Token :' . $response;
+    } else {
+        print "Authorization Failed";
+        exit;
+    }
+}
 
 # Creates a Zone Json string
 sub createTestPrimaryZone()
