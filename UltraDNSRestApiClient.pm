@@ -261,27 +261,22 @@ sub get_rrsets_by_type {
 
 sub create_rrset {
     my $me = shift;
+    my $zone_name = shift;
+    my $owner_name = shift;
+    my $record_type = shift;
     my $rrset_json = shift;
-
-    my $rrset = from_json($rrset_json);
-    my $zone_name = $rrset->{'zoneName'};
-    my $owner_name = $rrset->{'ownerName'};
-    my $record_type = $rrset->{'rrtype'};
 
     return $me->make_request("/zones/" . $zone_name . "/rrsets/" . $record_type . "/" . $owner_name, "POST", $rrset_json);
 }
 
 sub update_rrset {
     my $me = shift;
+    my $zone_name = shift;
+    my $owner_name = shift;
+    my $record_type = shift;
+    my $title = shift;
     my $rrset_json = shift;
 
-    my $rrset = from_json($rrset_json);
-    my $zone_name = $rrset->{'zoneName'};
-    my $owner_name = $rrset->{'ownerName'};
-    my $record_type = $rrset->{'rrtype'};
-    my $title = $rrset->{'title'};
-
-    my $rrset_json = shift;
     return $me->make_request("/zones/" . $zone_name . "/rrsets/" . $record_type . "/" . $owner_name . "/" . $title, "PUT", $rrset_json);
 }
 

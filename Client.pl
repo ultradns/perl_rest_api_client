@@ -47,11 +47,11 @@ print 'Zones of Account:' . $client->get_zones_of_account("teamrest");
 print "\n";
 
 print "\n";
-print 'Create RR Set:' . $client->create_rrset(createTestRRSet("example104.com.","teamrest", "B", 300 ));
+print 'Create RR Set:' . $client->create_rrset("example104.com.","teamrest", "A", createTestRRSet());
 print "\n";
 
 print "\n";
-print 'Update RR Set:' . $client->create_rrset(createTestRRSetForUpdate("example104.com.","teamrest", "A", 300 ));
+print 'Update RR Set:' . $client->update_rrset("example104.com.","teamrest", "A", "default", createTestRRSetForUpdate());
 print "\n";
 
 
@@ -60,7 +60,7 @@ print 'RR Sets of Zone:' . $client->get_rrsets("example104.com.");
 print "\n";
 
 print "\n";
-print 'RR Sets of Zone by Type:' . $client->get_rrsets_by_type("example104.com.", "A");
+print 'RR Sets of Zone by Type:' . $client->get_rrsets_by_type("example104.com.", "2");
 print "\n";
 
 print "\n";
@@ -123,42 +123,36 @@ sub createTestPrimaryZone()
 }
 
 sub createTestRRSet() {
-    my $zone_name = shift;
-    my $owner_name = shift;
-    my $record_type = shift;
-    my $ttl = shift;
 
     my @rdata = ("1.2.3.4", "2.4.6.8", "9.8.7.6");
+    my %profile = (
+        "\@context" => "http:\/\/schemas.ultradns.com\/RDPool.jsonschema",
+        "order" => "RANDOM",
+        "description" => "This is a great RD Pool",
+    );
 
     my  %rrset = (
-        "zoneName" => $zone_name,
-        "ownerName"=> $owner_name,
-        "title"=> "default",
-        "version"=> 1,
-        "rrtype"=> $record_type,
         "ttl"=> 300,
         "rdata" => \@rdata,
+        "profile" => \%profile,
     );
 
     return encode_json \%rrset;
 }
 
 sub createTestRRSetForUpdate() {
-    my $zone_name = shift;
-    my $owner_name = shift;
-    my $record_type = shift;
-    my $ttl = shift;
-
     my @rdata = ("1.9.3.4", "2.5.6.8", "9.8.7.5");
 
+    my %profile = (
+            "\@context" => "http:\/\/schemas.ultradns.com\/RDPool.jsonschema",
+            "order" => "RANDOM",
+            "description" => "This is a great RD Pool",
+        );
+
     my  %rrset = (
-        "zoneName" => $zone_name,
-        "ownerName"=> $owner_name,
-        "title"=> "default",
-        "version"=> 1,
-        "rrtype"=> $record_type,
-        "ttl"=>200,
+        "ttl"=> 200,
         "rdata" => \@rdata,
+        "profile" => \%profile,
     );
 
     return encode_json \%rrset;
