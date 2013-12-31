@@ -1,6 +1,11 @@
 #!usr/bin/perl
 package Client;
 
+# Usage
+#  perl Client.pl --apiurl http://<host:port>/v1 --username <username> --password <password>
+# OR
+#  perl Client.pl --apiurl http://<host:port>/v1 --refreshtoken <refresh token>
+
 use UltraDNSRestApiClient;
 use JSON;  
 use CGI;

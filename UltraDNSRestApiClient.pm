@@ -139,7 +139,7 @@ sub process_error {
     my $retry = shift;
 
     # making sure the refresh happens only once
-    if($response->code == 401 && $retry < 1) {
+    if(($response->code == 401 || $response->code == 400) && $retry < 1) {
         print $response->status_line . "-Refreshing Token \n";
         $me->refresh();
         return $me->make_request($path, $method, $params, 1);
@@ -200,6 +200,7 @@ sub get_zone_metadata {
     return $me->make_request("/zones/" . $zone_name, "GET" );
 }
 
+# get zones of account
 sub get_zones_of_account {
     my $me = shift;
     my $account_name = shift;
