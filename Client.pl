@@ -95,10 +95,10 @@ sub perform_auth {
 
 sub eval_auth_response {
     my $response = shift;
-    if($response ne "") {
-        print 'Refresh Token :' . $response;
+    if(index($response, "Refresh Token") != -1) {
+        print $response;
     } else {
-        print "Authorization Failed";
+        print $response;
         exit;
     }
 }

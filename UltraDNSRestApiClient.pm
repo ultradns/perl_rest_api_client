@@ -58,9 +58,10 @@ sub authorize {
         # set the access & refresh token as a member of this instance
         $me->{'access_token'} = $content->{'accessToken'};
         $me->{'refresh_token'} = $content->{'refreshToken'};
-        return $me->{'refresh_token'};
+        return "Refresh Token:" . $me->{'refresh_token'};
     } else {
-        return "";
+        my $content = $response->content;
+        return "Authorization Failed:" . $content;
     }
 }
 
@@ -89,9 +90,10 @@ sub refresh {
         # set the access & refresh token as a member of this instance
         $me->{'refresh_token'} = $content->{'refreshToken'};
         $me->{'access_token'} = $content->{'accessToken'};
-        return $me->{'refresh_token'};
+        return "Refresh Token:" . $me->{'refresh_token'};
     } else {
-        return "";
+        my $content = $response->content;
+        return "Authorization Failed:" . $content;
     }
 }
 
@@ -124,7 +126,7 @@ sub make_request {
         my $content = $response->content;
         return $content;
     } else {
-        $me->process_error($response, $path, $method, $params, $retry);
+        return $me->process_error($response, $path, $method, $params, $retry);
     }
 }
 
@@ -138,8 +140,11 @@ sub process_error {
     my $params = shift;
     my $retry = shift;
 
+    my $response_json = from_json($response->content);
+
     # making sure the refresh happens only once
-    if(($response->code == 401 || $response->code == 400) && $retry < 1) {
+    if(($response->code == 401 || $response->code == 400) && index($response->{'errorMessage'}, "invalid_grant") != -1
+        && $retry < 1) {
         print $response->status_line . "-Refreshing Token \n";
         $me->refresh();
         return $me->make_request($path, $method, $params, 1);
