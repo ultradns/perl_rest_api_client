@@ -40,40 +40,51 @@ print 'Account Details:'.$client->get_account_details();
 print "\n";
 
 print "\n";
-print "Zone Creation:" . $client->create_primary_zone(createTestPrimaryZone("example104.com.","teamrest" ));
+print "Zone Creation:" . $client->create_primary_zone(createTestPrimaryZone("example1001.com.","teamrest1" ));
+print "Zone Creation:" . $client->create_primary_zone(createTestPrimaryZone("example1002.com.","teamrest1" ));
 print "\n";
 
 print "\n";
-print 'Zone Meta Data:'.$client->get_zone_metadata("example104.com.");
+print 'Zone Meta Data:'.$client->get_zone_metadata("example1001.com.");
 print "\n";
 
 print "\n";
-print 'Zones of Account:' . $client->get_zones_of_account("teamrest");
+print 'Zones of Account:' . $client->get_zones_of_account("teamrest1");
 print "\n";
 
 print "\n";
-print 'Create RR Set:' . $client->create_rrset("example104.com.","teamrest", "A", createTestRRSet());
+print 'Create RD Pool:' . $client->create_rrset("example1001.com.","teamrest1", "A", createTestRDPool());
 print "\n";
 
 print "\n";
-print 'Update RR Set:' . $client->update_rrset("example104.com.","teamrest", "A", "default", createTestRRSetForUpdate());
+print 'Update RD Pool:' . $client->update_rrset("example1001.com.","teamrest1", "A", "default", createTestRDPoolForUpdate());
 print "\n";
 
 
 print "\n";
-print 'RR Sets of Zone:' . $client->get_rrsets("example104.com.");
+print 'Create RR Set:' . $client->create_rrset("example1002.com.","teamrest1", "A", createTestRRSet());
 print "\n";
 
 print "\n";
-print 'RR Sets of Zone by Type:' . $client->get_rrsets_by_type("example104.com.", "2");
+print 'Update RR Set:' . $client->update_rrset("example1002.com.","teamrest1", "A", "default", createTestRRSetForUpdate());
+print "\n";
+
+
+print "\n";
+print 'RR Sets of Zone:' . $client->get_rrsets("example1001.com.");
 print "\n";
 
 print "\n";
-print 'Delete RR Set:' . $client->delete_rrset("example104.com.","A", "teamrest");
+print 'RR Sets of Zone by Type:' . $client->get_rrsets_by_type("example1001.com.", "2");
 print "\n";
 
 print "\n";
-print 'Deleting Zone:' . $client->delete_zone("example104.com.");
+print 'Delete RR Set:' . $client->delete_rrset("example1001.com.","A", "teamrest1");
+print "\n";
+
+print "\n";
+print 'Deleting Zone:' . $client->delete_zone("example1001.com.");
+print 'Deleting Zone:' . $client->delete_zone("example1002.com.");
 print "\n";
 
 
@@ -127,7 +138,7 @@ sub createTestPrimaryZone()
     return encode_json \%zone;
 }
 
-sub createTestRRSet() {
+sub createTestRDPool() {
 
     my @rdata = ("1.2.3.4", "2.4.6.8", "9.8.7.6");
     my %profile = (
@@ -145,7 +156,7 @@ sub createTestRRSet() {
     return encode_json \%rrset;
 }
 
-sub createTestRRSetForUpdate() {
+sub createTestRDPoolForUpdate() {
     my @rdata = ("1.9.3.4", "2.5.6.8", "9.8.7.5");
 
     my %profile = (
@@ -158,6 +169,30 @@ sub createTestRRSetForUpdate() {
         "ttl"=> 200,
         "rdata" => \@rdata,
         "profile" => \%profile,
+    );
+
+    return encode_json \%rrset;
+}
+
+
+sub createTestRRSet() {
+
+    my @rdata = ("1.2.3.4");
+
+    my  %rrset = (
+        "ttl"=> 300,
+        "rdata" => \@rdata,
+    );
+
+    return encode_json \%rrset;
+}
+
+sub createTestRRSetForUpdate() {
+    my @rdata = ("1.9.3.4");
+
+    my  %rrset = (
+        "ttl"=> 200,
+        "rdata" => \@rdata,
     );
 
     return encode_json \%rrset;

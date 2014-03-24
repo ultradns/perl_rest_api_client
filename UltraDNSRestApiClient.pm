@@ -120,6 +120,15 @@ sub make_request {
     #prepare header for auth
     $ua->default_header('Authorization' => 'Bearer ' . $me->{'access_token'});
 
+    print "REQUEST URI: " . $uri;
+    print "\n";
+
+    print "REQUEST Params: " . $params;
+    print "\n";
+
+print "REQUEST Method: " . $method;
+    print "\n";
+
     my $response = $ua->request($req);
 
     if ($response->is_success) {
@@ -283,7 +292,7 @@ sub update_rrset {
     my $title = shift;
     my $rrset_json = shift;
 
-    return $me->make_request("/zones/" . $zone_name . "/rrsets/" . $record_type . "/" . $owner_name . "/" . $title, "PUT", $rrset_json);
+    return $me->make_request("/zones/" . $zone_name . "/rrsets/" . $record_type . "/" . $owner_name, "PUT", $rrset_json);
 }
 
 sub delete_rrset {
