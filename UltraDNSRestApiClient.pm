@@ -223,6 +223,11 @@ sub get_zones_of_account {
     my $sort = shift;
     my $reverse = shift;
 
+print "account_name" . $account_name . "\n";
+print "offset" . $offset . "\n";
+print "limit" . $limit . "\n";
+
+
     my %query_params = (
         "offset" => $offset,
         "limit" => $limit,

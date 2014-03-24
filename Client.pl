@@ -2,9 +2,9 @@
 package Client;
 
 # Usage
-#  perl Client.pl --apiurl http://<host:port>/v1 --username <username> --password <password>
+#  perl Client.pl --apiurl http://<host:port>/v1 --username <username> --password <password> --accountname <accountname>
 # OR
-#  perl Client.pl --apiurl http://<host:port>/v1 --refreshtoken <refresh token>
+#  perl Client.pl --apiurl http://<host:port>/v1 --refreshtoken <refresh token> --accountname <accountname>
 
 use UltraDNSRestApiClient;
 use JSON;  
@@ -15,9 +15,10 @@ my $api_url;
 my $refresh_token;
 my $username;
 my $password;
+my $accountname;
 
 GetOptions ('apiurl=s' => \$api_url,'refreshtoken=s' => \$refresh_token,
-    'username=s' => \$username, 'password=s' => \$password);
+    'username=s' => \$username, 'password=s' => \$password, 'accountname=s' => \$accountname);
 if(not defined $api_url) {
     print "apiurl is required";
     exit;
@@ -40,8 +41,8 @@ print 'Account Details:'.$client->get_account_details();
 print "\n";
 
 print "\n";
-print "Zone Creation:" . $client->create_primary_zone(createTestPrimaryZone("example1001.com.","teamrest1" ));
-print "Zone Creation:" . $client->create_primary_zone(createTestPrimaryZone("example1002.com.","teamrest1" ));
+print "Zone Creation:" . $client->create_primary_zone(createTestPrimaryZone("example1001.com.",$accountname ));
+print "Zone Creation:" . $client->create_primary_zone(createTestPrimaryZone("example1002.com.",$accountname ));
 print "\n";
 
 print "\n";
@@ -49,7 +50,7 @@ print 'Zone Meta Data:'.$client->get_zone_metadata("example1001.com.");
 print "\n";
 
 print "\n";
-print 'Zones of Account:' . $client->get_zones_of_account("teamrest1");
+print 'Zones of Account:' . $client->get_zones_of_account($accountname,0,5);
 print "\n";
 
 print "\n";
