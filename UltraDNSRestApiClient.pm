@@ -107,8 +107,6 @@ sub make_request {
     my $params = shift;
     my $retry = shift;
 
-    print 'PATH' . $path . "\n";
-
     my $api_base_url = $me->{'api_base_url'};
     my $url   = $api_base_url . $path;
     my $uri = URI->new($url);
