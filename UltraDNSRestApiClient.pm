@@ -107,6 +107,8 @@ sub make_request {
     my $params = shift;
     my $retry = shift;
 
+    print 'PATH' . $path . "\n";
+
     my $api_base_url = $me->{'api_base_url'};
     my $url   = $api_base_url . $path;
     my $uri = URI->new($url);
@@ -115,7 +117,8 @@ sub make_request {
     my $req = new HTTP::Request $method => $uri->as_string;
     $req->header('Content-Type' => 'application/json');
 
-    $req->content($params);
+
+        $req->content($params);
 
     #prepare header for auth
     $ua->default_header('Authorization' => 'Bearer ' . $me->{'access_token'});
@@ -223,18 +226,9 @@ sub get_zones_of_account {
     my $sort = shift;
     my $reverse = shift;
 
-print "account_name" . $account_name . "\n";
-print "offset" . $offset . "\n";
-print "limit" . $limit . "\n";
+    my $uri_string = '/accounts/' . $account_name . '/zones?' . 'offset='.$offset.'&limit='.$limit.'&sort='.$sort.'&reverse='.$reverse;
 
-
-    my %query_params = (
-        "offset" => $offset,
-        "limit" => $limit,
-        "sort" => $sort,
-        "reverse" => $reverse,
-    );
-    return $me->make_request("/accounts/" . $account_name . "/zones", "GET", %query_params);
+    return $me->make_request($uri_string, "GET");
 }
 
 sub delete_zone {
@@ -252,13 +246,9 @@ sub get_rrsets {
     my $sort = shift;
     my $reverse = shift;
 
-    my %query_params = (
-        "offset" => $offset,
-        "limit" => $limit,
-        "sort" => $sort,
-        "reverse" => $reverse,
-    );
-    return $me->make_request("/zones/" . $zone_name . "/rrsets", "GET", %query_params);
+    my $uri_string = '/zones/' . $zone_name . '/rrsets?' . 'offset='.$offset.'&limit='.$limit.'&sort='.$sort.'&reverse='.$reverse;
+
+    return $me->make_request($uri_string, "GET");
 }
 
 sub get_rrsets_by_type {
@@ -270,13 +260,8 @@ sub get_rrsets_by_type {
     my $sort = shift;
     my $reverse = shift;
 
-    my %query_params = (
-        "offset" => $offset,
-        "limit" => $limit,
-        "sort" => $sort,
-        "reverse" => $reverse,
-    );
-    return $me->make_request("/zones/" . $zone_name . "/rrsets/" . $type, "GET", %query_params);
+    my $uri_string = '/zones/' . $zone_name . '/rrsets/'. $type . '?offset='.$offset.'&limit='.$limit.'&sort='.$sort.'&reverse='.$reverse;
+    return $me->make_request($uri_string, "GET");
 }
 
 sub create_rrset {
